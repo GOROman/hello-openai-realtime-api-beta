@@ -1,0 +1,30 @@
+{
+  "name": "@openai/realtime-api-beta",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "OpenAI Realtime API Reference Client (beta)",
+  "main": "index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "test": "mocha ./test/index.js"
+  },
+  "author": "Keith Horwood <khorwood@openai.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "audio-decode": "^2.2.2",
+    "chai": "^5.1.1",
+    "dotenv": "^16.4.5",
+    "mocha": "^10.7.3",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.2",
+    "websocket": "^1.0.35"
+  },
+  "dependencies": {
+    "@openai/realtime-api-beta": "github:openai/openai-realtime-api-beta",
+    "fs": "^0.0.1-security",
+    "speaker": "^0.5.5",
+    "wav": "^1.0.2",
+    "ws": "^8.18.0"
+  }
+}
