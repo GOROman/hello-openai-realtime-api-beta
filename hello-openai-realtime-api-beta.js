@@ -5,7 +5,11 @@ import { RealtimeClient } from '@openai/realtime-api-beta';
 import Speaker from 'speaker';
 import { PassThrough } from 'stream';
 
-console.log("Hello OpenAI Realtime API beta");
+// RealtimeClient のインスタンスを作成
+const client = new RealtimeClient({
+    apiKey: process.env.OPENAI_API_KEY,
+    model: 'gpt-4o-mini-realtime-preview-2024-12-17', // https://platform.openai.com/docs/guides/realtime
+});
 
 // Spakerを作成
 const speaker = new Speaker({
@@ -20,19 +24,19 @@ const audioStream = new PassThrough();
 //  音声のストリームをスピーカーに接続
 audioStream.pipe(speaker);
 
+audioStream.on('end', () => {
+    console.log('ストリーム終了しました。');
+});
+
 // スピーカー終了時のイベントハンドラ
 speaker.on('close', () => {
     console.log('再生が終了しました。');
+
     speaker.close();
     client.disconnect();
     process.exit(0);
 });
 
-// RealtimeClient のインスタンスを作成
-const client = new RealtimeClient({
-    apiKey: process.env.OPENAI_API_KEY,
-    model: 'gpt-4o-mini-realtime-preview-2024-12-17', // https://platform.openai.com/docs/guides/realtime
-});
 
 // セッションを更新
 client.updateSession({
@@ -59,6 +63,20 @@ client.on('conversation.updated', (event) => {
     if (item.status == "completed" && item.role == "assistant") {
         console.log("応答が完了しました。接続を終了します...");
         audioStream.end();
+    }
+});
+
+client.on('realtime.event', ({ time, source, event }) => {
+    // time is an ISO timestamp
+    // source is 'client' or 'server'
+    // event is the raw event payload (json)
+
+    // console.log インライン表示
+    console.log(`${time} [${source}] ${event.type}`);
+    if (source === 'server') {
+        if (event.type === 'response.done') {
+            console.log(event.response.usage);
+        }
     }
 });
 
